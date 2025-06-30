@@ -42,6 +42,7 @@ export default function RootLayout({
               <SignUpButton />
             </SignedOut>
             <SignedIn>
+              <h2 className="text-xl font-bold">Dashboard</h2>
               <UserButton />
             </SignedIn>
           </header>

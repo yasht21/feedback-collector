@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -24,8 +23,10 @@ model FeedbackForm {
   id         String     @id @default(cuid())
   slug       String     @unique
   userId     String
+  title      String
   user       User       @relation(fields: [userId], references: [id])
-  feedbacks  Feedback[]
+  feedbacks Feedback[]
+  createdAt DateTime @default(now())
 }
 
 model Feedback {
