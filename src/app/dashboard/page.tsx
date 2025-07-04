@@ -1,5 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import CreateFormModal from "@/components/CreateFormModal"
+import { currentUser } from "@clerk/nextjs/server";
 import { getFormsForUser } from "@/lib/actions/getFormsForUser";
 import React from "react";
 import DashboardClient from "@/components/DashboardClient";
