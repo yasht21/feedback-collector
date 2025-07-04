@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {
@@ -42,7 +43,16 @@ export default function RootLayout({
               <SignUpButton />
             </SignedOut>
             <SignedIn>
-              <h2 className="text-xl font-bold">Dashboard</h2>
+              <Link href="/" className="mr-4">
+                <h2 className="text-xl font-bold cursor-pointer">
+                  Home
+                </h2>
+                </Link>
+                <Link href="/dashboard" className="mr-4">
+                <h2 className="text-xl font-bold cursor-pointer">
+                  Dashboard
+                </h2>
+                </Link>
               <UserButton />
             </SignedIn>
           </header>
