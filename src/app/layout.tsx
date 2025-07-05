@@ -10,6 +10,8 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +59,7 @@ export default function RootLayout({
             </SignedIn>
           </header>
         {children}
+        <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>
     </ClerkProvider>

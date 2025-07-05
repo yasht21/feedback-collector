@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
+import { toast } from "react-toastify";
 
 type Form = {
   id: string;
@@ -37,10 +38,11 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
         throw new Error(data.error || "Failed to update form title");
       }
 
-      console.log("Form title updated successfully");
+      toast.success("Form title updated successfully");
       // optionally show a toast or success message here
     } catch (err) {
       console.error("Error updating title:", err);
+      toast.error("Could not update form title");
       // optionally show an error toast
     }
 };
@@ -66,10 +68,12 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
         throw new Error(data.error || "Failed to delete form");
       }
       console.log("Form deleted successfully");
+      toast.success("Form deleted successfully");
       router.push(`/dashboard`);
       // Optionally redirect the user or refresh list
     } catch (err) {
       console.error("Error deleting form:", err);
+      toast.error("Could not delete form");
       // optionally show an error toast
     }
   };
