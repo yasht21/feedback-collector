@@ -1,9 +1,12 @@
 'use client';
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
 
 type Form = {
+  id: string;
+  userId: string;
   title: string;
   slug: string;
   // Add other fields as needed
@@ -15,13 +18,60 @@ interface FormDetailsPageProps {
 
 export default function FormDetailsPage({ form }: FormDetailsPageProps) {
   const [title, setTitle] = useState(form.title);
-  const handleTitleSave = () => {
-    // Call API to save updated title
-  };
+  const router = useRouter();
+
+  const handleTitleSave = async () => {
+  console.log("Saving title:", title);
+
+    try {
+      const res = await fetch("/api/form/update", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: form.id, title }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update form title");
+      }
+
+      console.log("Form title updated successfully");
+      // optionally show a toast or success message here
+    } catch (err) {
+      console.error("Error updating title:", err);
+      // optionally show an error toast
+    }
+};
+
 
   // Delete the entire form
-  const handleDeleteForm = () => {
+  const handleDeleteForm = async () => {
     // Confirm and delete form
+    const confirmed = confirm("Are you sure you want to delete this form?");
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch("/api/form/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: form.id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to delete form");
+      }
+      console.log("Form deleted successfully");
+      router.push(`/dashboard`);
+      // Optionally redirect the user or refresh list
+    } catch (err) {
+      console.error("Error deleting form:", err);
+      // optionally show an error toast
+    }
   };
   return (
     <div className="space-y-6 max-w-3xl mx-auto p-4">
