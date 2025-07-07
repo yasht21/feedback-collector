@@ -9,7 +9,8 @@ interface Props {
 
 export default async function FormPage({ params }: Props) {
   const form = await prisma.feedbackForm.findUnique({
-    where: { id: params.id }
+    where: { id: params.id },
+    include: { feedbacks: true }
   });
 
   if (!form) {

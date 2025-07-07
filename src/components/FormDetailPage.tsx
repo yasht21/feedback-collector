@@ -5,11 +5,19 @@ import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
 import { toast } from "react-toastify";
 
+type Feedback = {
+  id: string;
+  formId: string;
+  message: string;
+  createdAt: Date;
+};
+
 type Form = {
   id: string;
   userId: string;
   title: string;
   slug: string;
+  feedbacks: Feedback[];
   // Add other fields as needed
 };
 
@@ -20,9 +28,7 @@ interface FormDetailsPageProps {
 export default function FormDetailsPage({ form }: FormDetailsPageProps) {
   const [title, setTitle] = useState(form.title);
   const router = useRouter();
-
   const handleTitleSave = async () => {
-  console.log("Saving title:", title);
 
     try {
       const res = await fetch("/api/form/update", {
@@ -110,6 +116,22 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
           View Public Link →
         </a>
       </div>
+       <div className="space-y-3">
+      <h2 className="text-xl font-semibold">
+        Submitted Feedbacks ({form.feedbacks.length})
+      </h2>
+      <ul className="space-y-2">
+        {form.feedbacks.map((fb) => (
+          <li key={fb.id} className="border p-3 rounded shadow">
+            <p>{fb.message}</p>
+            <p className="text-xs text-gray-500">
+              Submitted on {new Date(fb.createdAt).toLocaleString()}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+
 
     
     </div>

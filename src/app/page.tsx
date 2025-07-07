@@ -1,68 +1,78 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start max-w-4xl mx-auto px-4 py-6">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <div className="p-6 bg-pink-100 text-pink-800 rounded-xl shadow-md">
-          Tailwind layers loaded successfully 🌟
+    <main className="flex flex-col items-center justify-center px-4 bg-black text-gray-200">
+      {/* Hero */}
+      <section className="w-full py-10 text-center bg-gradient-to-b from-neutral-900 to-black">
+        <h1 className="text-5xl font-bold text-white mb-4">
+          Give Everyone a Voice
+        </h1>
+        <p className="text-lg text-gray-400 mb-6 max-w-2xl mx-auto">
+          Collect anonymous, honest feedback easily with Yap. No barriers, no awkwardness — just insights.
+        </p>
+        <a
+          href="/dashboard"
+          className="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 transition"
+        >
+          Get Started
+        </a>
+      </section>
+
+      {/* Features */}
+      <section
+        id="features"
+        className="max-w-7xl w-full mx-auto px-4 py-10 text-center"
+      >
+        <h2 className="text-3xl font-bold mb-12 text-white">Why Choose Yap?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-neutral-900 shadow-sm p-6 rounded-lg hover:shadow-md transition">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Anonymous by Default
+            </h3>
+            <p className="text-gray-400">
+              Encourage honesty with fully anonymous feedback forms.
+            </p>
+          </div>
+          <div className="bg-neutral-900 shadow-sm p-6 rounded-lg hover:shadow-md transition">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Shareable Links
+            </h3>
+            <p className="text-gray-400">
+              Send a link to anyone — start collecting responses instantly.
+            </p>
+          </div>
+          <div className="bg-neutral-900 shadow-sm p-6 rounded-lg hover:shadow-md transition">
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Distraction-Free
+            </h3>
+            <p className="text-gray-400">
+              Clean, minimal experience for you and your respondents.
+            </p>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+
+      {/* About */}
+      <section
+        id="about"
+        className="bg-neutral-950 w-full py-10 text-center px-4"
+      >
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-white">
+            About Yap
+          </h2>
+          <p className="text-gray-400 leading-relaxed">
+            Yap was built to make feedback easy. Whether you are collecting suggestions from employees, students, or customers — Yap gives everyone a voice without the awkwardness.
+          </p>
+        </div>
+      </section>
+
+
+      {/* Footer */}
+      <footer className="bg-neutral-950 border-t border-neutral-800 py-6 w-full mt-12 text-sm text-gray-500 text-center">
+        © 2025 Yap. All rights reserved. &nbsp;·&nbsp;
+        <a href="#" className="hover:text-blue-400">Privacy</a> ·{" "}
+        <a href="#" className="hover:text-blue-400">Terms</a>
       </footer>
-    </div>
+    </main>
   );
 }
