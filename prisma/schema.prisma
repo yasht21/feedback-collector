@@ -34,5 +34,6 @@ model Feedback {
   formId     String
   form       FeedbackForm @relation(fields: [formId], references: [id])
   message    String
+  isToxic    Boolean? @default(false)
   createdAt  DateTime   @default(now())
 }
