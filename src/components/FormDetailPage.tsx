@@ -1,18 +1,20 @@
 'use client';
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { toast } from "react-toastify";
 
 type Feedback = {
   id: string;
   formId: string;
-  sentiment: "positive" | "negative" | "neutral"; // Assuming sentiment is a string
+  sentiment: "positive" | "negative" | "neutral";
   userId: string;
   message: string;
   createdAt: Date;
-  isToxic: boolean; // Assuming this field exists to indicate toxicity
+  isToxic: boolean;
 };
 
 type Form = {
@@ -22,7 +24,6 @@ type Form = {
   title: string;
   slug: string;
   feedbacks: Feedback[];
-  // Add other fields as needed
 };
 
 interface FormDetailsPageProps {
@@ -34,8 +35,8 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
   const [loadingSummary, setLoadingSummary] = useState(false);
 
   const router = useRouter();
-  const handleTitleSave = async () => {
 
+  const handleTitleSave = async () => {
     try {
       const res = await fetch("/api/form/update", {
         method: "PATCH",
@@ -46,23 +47,16 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to update form title");
-      }
+      if (!res.ok) throw new Error(data.error || "Failed to update form title");
 
       toast.success("Form title updated successfully");
-      // optionally show a toast or success message here
     } catch (err) {
       console.error("Error updating title:", err);
       toast.error("Could not update form title");
-      // optionally show an error toast
     }
-};
+  };
 
-
-  // Delete the entire form
   const handleDeleteForm = async () => {
-    // Confirm and delete form
     const confirmed = confirm("Are you sure you want to delete this form?");
     if (!confirmed) return;
 
@@ -76,104 +70,127 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to delete form");
-      }
-      console.log("Form deleted successfully");
+      if (!res.ok) throw new Error(data.error || "Failed to delete form");
+
       toast.success("Form deleted successfully");
       router.push(`/dashboard`);
-      // Optionally redirect the user or refresh list
     } catch (err) {
       console.error("Error deleting form:", err);
       toast.error("Could not delete form");
-      // optionally show an error toast
     }
   };
+
   const handleSummarize = async () => {
-    console.log("Summarizing feedback for form:", form);
     setLoadingSummary(true);
     const res = await fetch(`/api/feedbackForm/${form.id}/summarize`, {
       method: "POST",
     });
     if (res.ok) {
-      router.refresh(); // reload server props
+      router.refresh();
     }
     setLoadingSummary(false);
   };
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto p-4">
-      {/* Back and Delete Form */}
+    <div className="max-w-6xl mx-auto p-4 space-y-6 bg-[#1e1e1e] min-h-screen text-gray-100">
+      {/* Back and Delete */}
       <div className="flex justify-between items-center">
-        <Link href="/dashboard" className="text-sm text-blue-600 underline">
+        <Link href="/dashboard" className="text-sm text-blue-400 underline">
           ← Back to Forms
         </Link>
         <button
           onClick={handleDeleteForm}
-          className="text-red-600 hover:text-red-800 flex items-center gap-1"
+          className="text-red-400 hover:text-red-500 flex items-center gap-1"
         >
           <Trash className="w-4 h-4" /> Delete Form
         </button>
       </div>
 
-      {/* Editable Form Title */}
-      <div>
-        <label className="block text-sm font-medium">Form Title</label>
+      {/* Title & Slug */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-200">Form Title</label>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          onBlur={handleTitleSave} // Save on blur (or add a Save button)
-          className="border rounded p-2 w-full mt-1"
+          onBlur={handleTitleSave}
+          className="border border-gray-600 bg-[#2c2c2c] text-gray-100 rounded p-2 w-full mt-1"
         />
-        <div className="text-sm text-gray-500 mt-1">Slug: {form.slug}</div>
+        <div className="text-sm text-gray-400 mt-1">Slug: {form.slug}</div>
         <a
           href={`/f/${form.slug}`}
           target="_blank"
-          className="text-blue-600 text-sm underline"
+          className="text-blue-400 text-sm underline"
         >
           View Public Link →
         </a>
       </div>
 
-      <div className="mb-6 p-4 bg-gray-50 rounded">
-  <h2 className="text-lg font-semibold">Summary</h2>
-  {form.summary ? (
-    <p className="mt-2 text-gray-700">{form.summary}</p>
-  ) : (
-    <p className="mt-2 text-gray-500 italic">No summary yet. Click the button to generate one.</p>
-  )}
-
-  <button
-    onClick={handleSummarize}
-    disabled={loadingSummary}
-    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-  >
-    {loadingSummary ? "Summarizing..." : "Summarize Feedback"}
-  </button>
-</div>
-
-       <div className="space-y-3">
-      <h2 className="text-xl font-semibold">
-        Submitted Feedbacks ({form.feedbacks.length})
-      </h2>
-      <ul className="space-y-2">
-        {form.feedbacks.map((fb) => (
-              <li key={fb.id} className="border p-3 rounded shadow space-y-2">
-              <div className="flex justify-between items-center">
-                <p className="flex-1">{fb.message}</p>
-              </div>
-              {fb.isToxic && (
-                <span className="inline-block px-2 py-1 text-xs text-white bg-red-600 rounded">
-                🚫 Flagged as toxic
-                </span>
-              )}
-              <p className="text-xs text-gray-500">
-                Submitted on {new Date(fb.createdAt).toLocaleString()}
+      {/* Main content: summary & feedbacks */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Summary */}
+        <div className="md:col-span-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-white">Summary</h2>
+            <button
+              onClick={handleSummarize}
+              disabled={loadingSummary}
+              title="Refresh Summary"
+              className="text-gray-300 hover:text-blue-400 disabled:opacity-50"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="bg-[#2c2c2c] border border-gray-700 rounded shadow-sm p-4 text-gray-300">
+            {form.summary ? (
+              <p>{form.summary}</p>
+            ) : (
+              <p className="italic text-gray-500">
+                No summary yet. Click the refresh icon to generate one.
               </p>
+            )}
+          </div>
+        </div>
+
+        {/* Feedbacks */}
+        <div className="md:col-span-2 space-y-4">
+          <h2 className="text-xl font-semibold text-white">
+            Submitted Feedbacks ({form.feedbacks.length})
+          </h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {form.feedbacks.map((fb) => (
+              <li
+                key={fb.id}
+                className="bg-[#2c2c2c] border border-gray-700 rounded shadow-sm p-4 space-y-2"
+              >
+                <p className="text-gray-100 mb-2">{fb.message}</p>
+                <div className="flex justify-between items-center text-xs">
+                  <div className="space-x-2 flex items-center">
+                    <span
+                      className={`px-2 py-0.5 rounded ${
+                        fb.sentiment === "positive"
+                          ? "bg-green-700 text-green-100"
+                          : fb.sentiment === "negative"
+                          ? "bg-red-700 text-red-100"
+                          : "bg-yellow-700 text-yellow-100"
+                      }`}
+                    >
+                      {fb.sentiment}
+                    </span>
+                    {fb.isToxic && (
+                      <span className="px-2 py-0.5 rounded bg-red-800 text-red-100">
+                        🚫 Toxic
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-gray-500">
+                    {new Date(fb.createdAt).toLocaleString()}
+                  </p>
+                </div>
               </li>
-        ))}
-      </ul>
-    </div>    
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
