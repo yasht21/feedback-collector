@@ -26,6 +26,7 @@ model FeedbackForm {
   title      String
   user       User       @relation(fields: [userId], references: [id])
   feedbacks Feedback[]
+  summary   String?    // <- add this
   createdAt DateTime @default(now())
 }
 
@@ -36,4 +37,5 @@ model Feedback {
   message    String
   isToxic    Boolean? @default(false)
   createdAt  DateTime   @default(now())
+  sentiment String?     @default("neutral") // <- add this
 }

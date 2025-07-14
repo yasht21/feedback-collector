@@ -30,6 +30,7 @@ export async function POST(
 
   const isToxic = await checkToxicity(content);
 
+
   await prisma.feedback.update({
     where: { id: feedback.id },
     data: { isToxic },

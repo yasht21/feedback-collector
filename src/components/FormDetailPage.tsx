@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 type Feedback = {
   id: string;
   formId: string;
+  sentiment: "positive" | "negative" | "neutral"; // Assuming sentiment is a string
+  userId: string;
   message: string;
   createdAt: Date;
   isToxic: boolean; // Assuming this field exists to indicate toxicity
@@ -16,6 +18,7 @@ type Feedback = {
 type Form = {
   id: string;
   userId: string;
+  summary?: string;
   title: string;
   slug: string;
   feedbacks: Feedback[];
@@ -28,6 +31,8 @@ interface FormDetailsPageProps {
 
 export default function FormDetailsPage({ form }: FormDetailsPageProps) {
   const [title, setTitle] = useState(form.title);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+
   const router = useRouter();
   const handleTitleSave = async () => {
 
@@ -84,7 +89,18 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
       // optionally show an error toast
     }
   };
-  console.log("Form details:", form);
+  const handleSummarize = async () => {
+    console.log("Summarizing feedback for form:", form);
+    setLoadingSummary(true);
+    const res = await fetch(`/api/feedbackForm/${form.id}/summarize`, {
+      method: "POST",
+    });
+    if (res.ok) {
+      router.refresh(); // reload server props
+    }
+    setLoadingSummary(false);
+  };
+
   return (
     <div className="space-y-6 max-w-3xl mx-auto p-4">
       {/* Back and Delete Form */}
@@ -118,29 +134,46 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
           View Public Link →
         </a>
       </div>
+
+      <div className="mb-6 p-4 bg-gray-50 rounded">
+  <h2 className="text-lg font-semibold">Summary</h2>
+  {form.summary ? (
+    <p className="mt-2 text-gray-700">{form.summary}</p>
+  ) : (
+    <p className="mt-2 text-gray-500 italic">No summary yet. Click the button to generate one.</p>
+  )}
+
+  <button
+    onClick={handleSummarize}
+    disabled={loadingSummary}
+    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+  >
+    {loadingSummary ? "Summarizing..." : "Summarize Feedback"}
+  </button>
+</div>
+
        <div className="space-y-3">
       <h2 className="text-xl font-semibold">
         Submitted Feedbacks ({form.feedbacks.length})
       </h2>
       <ul className="space-y-2">
         {form.feedbacks.map((fb) => (
-            <li key={fb.id} className="border p-3 rounded shadow space-y-2">
-            <p>{fb.message}</p>
-            {fb.isToxic && (
-              <span className="inline-block px-2 py-1 text-xs text-white rounded">
-              🚫 Flagged as toxic
-              </span>
-            )}
-            <p className="text-xs text-gray-500">
-              Submitted on {new Date(fb.createdAt).toLocaleString()}
-            </p>
-            </li>
+              <li key={fb.id} className="border p-3 rounded shadow space-y-2">
+              <div className="flex justify-between items-center">
+                <p className="flex-1">{fb.message}</p>
+              </div>
+              {fb.isToxic && (
+                <span className="inline-block px-2 py-1 text-xs text-white bg-red-600 rounded">
+                🚫 Flagged as toxic
+                </span>
+              )}
+              <p className="text-xs text-gray-500">
+                Submitted on {new Date(fb.createdAt).toLocaleString()}
+              </p>
+              </li>
         ))}
       </ul>
-    </div>
-
-
-    
+    </div>    
     </div>
   );
 }
