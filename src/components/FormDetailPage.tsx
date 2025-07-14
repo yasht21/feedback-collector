@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash } from "lucide-react";
-import { RotateCcw } from "lucide-react";
+import { Trash2, Share, ArrowLeft, RotateCcw, ShieldAlert } from "lucide-react";
 import { toast } from "react-toastify";
 
 type Feedback = {
@@ -32,6 +31,7 @@ interface FormDetailsPageProps {
 
 export default function FormDetailsPage({ form }: FormDetailsPageProps) {
   const [title, setTitle] = useState(form.title);
+  const [editingTitle, setEditingTitle] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
 
   const router = useRouter();
@@ -53,6 +53,8 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
     } catch (err) {
       console.error("Error updating title:", err);
       toast.error("Could not update form title");
+    } finally {
+      setEditingTitle(false);
     }
   };
 
@@ -93,36 +95,54 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-6 bg-[#1e1e1e] min-h-screen text-gray-100">
-      {/* Back and Delete */}
+      {/* Header */}
       <div className="flex justify-between items-center">
-        <Link href="/dashboard" className="text-sm text-blue-400 underline">
-          ← Back to Forms
-        </Link>
-        <button
-          onClick={handleDeleteForm}
-          className="text-red-400 hover:text-red-500 flex items-center gap-1"
+        <Link
+          href="/dashboard"
+          className="text-gray-400 hover:text-white"
+          title="Back to Forms"
         >
-          <Trash className="w-4 h-4" /> Delete Form
-        </button>
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+
+        <div className="flex items-center gap-4">
+          <a
+            href={`/f/${form.slug}`}
+            target="_blank"
+            title="View Public Link"
+            className="text-gray-400 hover:text-white"
+          >
+            <Share className="w-5 h-5" />
+          </a>
+
+          <button
+            onClick={handleDeleteForm}
+            title="Delete Form"
+            className="text-red-500 hover:text-red-700"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Title & Slug */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-200">Form Title</label>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={handleTitleSave}
-          className="border border-gray-600 bg-[#2c2c2c] text-gray-100 rounded p-2 w-full mt-1"
-        />
-        <div className="text-sm text-gray-400 mt-1">Slug: {form.slug}</div>
-        <a
-          href={`/f/${form.slug}`}
-          target="_blank"
-          className="text-blue-400 text-sm underline"
-        >
-          View Public Link →
-        </a>
+      {/* Title */}
+      <div>
+        {editingTitle ? (
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={handleTitleSave}
+            autoFocus
+            className="bg-transparent border-b border-gray-600 text-xl font-semibold focus:outline-none"
+          />
+        ) : (
+          <h1
+            onClick={() => setEditingTitle(true)}
+            className="text-xl font-semibold cursor-pointer hover:underline"
+          >
+            {title}
+          </h1>
+        )}
       </div>
 
       {/* Main content: summary & feedbacks */}
@@ -164,26 +184,13 @@ export default function FormDetailsPage({ form }: FormDetailsPageProps) {
               >
                 <p className="text-gray-100 mb-2">{fb.message}</p>
                 <div className="flex justify-between items-center text-xs">
-                  <div className="space-x-2 flex items-center">
-                    <span
-                      className={`px-2 py-0.5 rounded ${
-                        fb.sentiment === "positive"
-                          ? "bg-green-700 text-green-100"
-                          : fb.sentiment === "negative"
-                          ? "bg-red-700 text-red-100"
-                          : "bg-yellow-700 text-yellow-100"
-                      }`}
-                    >
-                      {fb.sentiment}
-                    </span>
-                    {fb.isToxic && (
-                      <span className="px-2 py-0.5 rounded bg-red-800 text-red-100">
-                        🚫 Toxic
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 flex items-center gap-1">
                     {new Date(fb.createdAt).toLocaleString()}
+                    {fb.isToxic && (
+                      <ShieldAlert
+                        className="w-4 h-4 text-red-600"
+                      />
+                    )}
                   </p>
                 </div>
               </li>
